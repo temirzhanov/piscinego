@@ -1,9 +1,9 @@
 package piscine
 
 func FifthAndSkip(str string) string {
-
 	res := ""
 	counter := 0
+
 	if str == "" {
 		return "\n"
 	} else if len(str) < 5 {
@@ -22,5 +22,5 @@ func FifthAndSkip(str string) string {
 		}
 	}
 
-	return res
+	return res + "\n"
 }
