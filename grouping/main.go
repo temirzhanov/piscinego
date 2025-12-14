@@ -21,18 +21,21 @@ func main() {
 	}
 
 	words := splitSpaces(text)
+
 	n := 0
 	for _, raw := range words {
 		w := trimWord(raw)
 		if len(w) == 0 {
 			continue
 		}
+
 		c := countDistinctContains(w, alts)
 		for i := 0; i < c; i++ {
 			n++
 			fmt.Printf("%d: %s\n", n, w)
 		}
 	}
+	// Если совпадений нет — ничего не печатается (n так и останется 0)
 }
 
 func parsePattern(p string) ([]string, bool) {
@@ -43,10 +46,12 @@ func parsePattern(p string) ([]string, bool) {
 	if !((open == '(' && close == ')') || (open == '[' && close == ']')) {
 		return nil, false
 	}
+
 	inner := p[1 : len(p)-1]
 	if len(inner) == 0 {
 		return nil, false
 	}
+
 	parts := splitByBar(inner)
 	for _, s := range parts {
 		if len(s) == 0 {
@@ -56,6 +61,7 @@ func parsePattern(p string) ([]string, bool) {
 	return parts, true
 }
 
+// Считает, сколько альтернатив из alts встречаются в word (по 1 разу на альтернативу)
 func countDistinctContains(word string, alts []string) int {
 	cnt := 0
 	for _, a := range alts {
@@ -97,60 +103,36 @@ func splitByBar(s string) []string {
 	return out
 }
 
-// trimWord:
-// - remove leading non-letters
-// - keep from first letter through the last letter
-// - keep exactly ONE trailing digit *only if* there are NO digits inside the [first..last letter] span
+// trimWord: оставляет крайний "кусок слова" из букв/цифр (A-Z a-z 0-9),
+// обрезая только не-буквенно-цифровые символы по краям токена.
 func trimWord(s string) string {
 	if len(s) == 0 {
 		return ""
 	}
 
-	// Find first letter (left bound)
 	l := 0
-	for l < len(s) && !isLetter(s[l]) {
+	for l < len(s) && !isAlphaNum(s[l]) {
 		l++
 	}
 	if l >= len(s) {
 		return ""
 	}
 
-	// Find last letter (right bound)
-	lastLetter := -1
-	for r := len(s) - 1; r >= l; r-- {
-		if isLetter(s[r]) {
-			lastLetter = r
-			break
-		}
+	r := len(s) - 1
+	for r >= l && !isAlphaNum(s[r]) {
+		r--
 	}
-	if lastLetter == -1 {
+	if r < l {
 		return ""
 	}
 
-	// Check if there is any digit within the core [l..lastLetter]
-	hasDigitInCore := false
-	for i := l; i <= lastLetter; i++ {
-		if isDigit(s[i]) {
-			hasDigitInCore = true
-			break
-		}
-	}
-
-	end := lastLetter + 1
-	// Keep one trailing digit only if core has no digits
-	if !hasDigitInCore && end < len(s) && isDigit(s[end]) {
-		end++
-	}
-
-	return s[l:end]
+	return s[l : r+1]
 }
 
-func isLetter(b byte) bool {
-	return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z')
-}
-
-func isDigit(b byte) bool {
-	return b >= '0' && b <= '9'
+func isAlphaNum(b byte) bool {
+	return (b >= 'a' && b <= 'z') ||
+		(b >= 'A' && b <= 'Z') ||
+		(b >= '0' && b <= '9')
 }
 
 func contains(hay, needle string) bool {
