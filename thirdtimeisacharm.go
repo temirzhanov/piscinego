@@ -1,9 +1,7 @@
 package piscine
 
-package main
-
 import (
-"strings"
+	"strings"
 )
 
 func ThirdTimeIsACharm(str string) string {
