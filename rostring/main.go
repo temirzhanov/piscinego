@@ -6,14 +6,14 @@ import (
 	"github.com/01-edu/z01"
 )
 
-func printString(s string) {
+func isSpace(c byte) bool {
+	return c == ' ' || c == '\t'
+}
+
+func print(s string) {
 	for _, r := range s {
 		z01.PrintRune(r)
 	}
-}
-
-func isSpace(b byte) bool {
-	return b == ' ' || b == '\t'
 }
 
 func main() {
@@ -23,40 +23,54 @@ func main() {
 	}
 
 	s := os.Args[1]
-	tokens := []string{}
-	start := -1
+	i := 0
+	n := len(s)
 
-	for i := 0; i < len(s); i++ {
-		if !isSpace(s[i]) {
-			if start == -1 {
-				start = i
-			}
-		} else {
-			if start != -1 {
-				tokens = append(tokens, s[start:i])
-				start = -1
-			}
-		}
-	}
-	if start != -1 {
-		tokens = append(tokens, s[start:])
+	// пропускаем начальные пробелы
+	for i < n && isSpace(s[i]) {
+		i++
 	}
 
-	if len(tokens) == 0 {
+	// если строка пустая
+	if i == n {
 		z01.PrintRune('\n')
 		return
 	}
 
-	if len(tokens) > 1 {
-		first := tokens[0]
-		tokens = append(tokens[1:], first)
+	// находим первое слово
+	start := i
+	for i < n && !isSpace(s[i]) {
+		i++
+	}
+	first := s[start:i]
+
+	// печатаем остальные слова
+	firstPrinted := false
+
+	for i < n {
+		for i < n && isSpace(s[i]) {
+			i++
+		}
+		if i < n {
+			if firstPrinted {
+				z01.PrintRune(' ')
+			}
+			wordStart := i
+			for i < n && !isSpace(s[i]) {
+				i++
+			}
+			print(s[wordStart:i])
+			firstPrinted = true
+		}
 	}
 
-	for i, t := range tokens {
-		if i > 0 {
-			z01.PrintRune(' ')
-		}
-		printString(t)
+	// если были другие слова — добавляем пробел
+	if firstPrinted {
+		z01.PrintRune(' ')
 	}
+
+	// печатаем первое слово
+	print(first)
+
 	z01.PrintRune('\n')
 }

@@ -15,18 +15,19 @@ func RevConcatAlternate(slice1, slice2 []int) []int {
 		j--
 	}
 
-	turn := 0
+	first := true
+
 	for i >= 0 && j >= 0 {
-		if turn == 0 {
+		if first {
 			res = append(res, slice1[i])
 			i--
-			turn = 1
 		} else {
 			res = append(res, slice2[j])
 			j--
-			turn = 0
 		}
+		first = !first
 	}
+
 	for i >= 0 {
 		res = append(res, slice1[i])
 		i--

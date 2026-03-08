@@ -11,23 +11,23 @@ func main() {
 		return
 	}
 
-	check := false
-	str := ""
+	s := os.Args[1]
+	space := false
+	printed := false
 
-	for i := 0; i < len(os.Args[1]); i++ {
-		if os.Args[1][i] != ' ' {
-			if check && str != "" {
-				str += "   "
-			}
-			str += string(os.Args[1][i])
-			check = false
+	for i := 0; i < len(s); i++ {
+		if s[i] == ' ' {
+			space = true
 		} else {
-			check = true
+			if space && printed {
+				z01.PrintRune(' ')
+				z01.PrintRune(' ')
+				z01.PrintRune(' ')
+			}
+			z01.PrintRune(rune(s[i]))
+			space = false
+			printed = true
 		}
-	}
-
-	for _, r := range str {
-		z01.PrintRune(r)
 	}
 	z01.PrintRune('\n')
 }
